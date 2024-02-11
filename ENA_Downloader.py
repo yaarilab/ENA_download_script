@@ -5,8 +5,8 @@ from urllib.parse import urljoin
 import json
 import csv
 
-#PROJECTS_PATH = r"/misc/work/sequence_data_store/"
-PROJECTS_PATH = r"C:\Users\yaniv\Desktop\work\to_copy"
+PROJECTS_PATH = r"/misc/work/sequence_data_store/"
+#PROJECTS_PATH = r"C:\Users\yaniv\Desktop\work\to_copy"
 
 class ENA_Downloader():
     
@@ -76,8 +76,9 @@ class ENA_Downloader():
                 for file_url in fastq_files:
                     file_name = file_url.split('/')[-1]
                     file_path = os.path.join(download_dir, file_name)
-                    self.download_file("https://" + file_url, file_path)
-                    print(f"Downloaded {file_name} to {file_path}")
+                    if not os.path.exists(file_path):
+                        self.download_file("https://" + file_url, file_path)
+                        print(f"Downloaded {file_name} to {file_path}")
 
     def start_downloading(self):
         try:
