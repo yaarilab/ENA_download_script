@@ -3,11 +3,11 @@ import argparse
 
 
 def main(project_name, use_submitted):
-    if use_submitted.lowwer() == 'false':
+    if use_submitted.lower() == 'false':
         use_submitted = False
     else:
         use_submitted = True
-        
+
     obj = ENA_Downloader(project_name, use_submitted)
     obj.start_downloading()
 
