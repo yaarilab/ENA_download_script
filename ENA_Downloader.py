@@ -10,11 +10,12 @@ PROJECTS_PATH = r"/misc/work/sequence_data_store/"
 
 class ENA_Downloader():
     
-    def __init__(self, project_id):
+    def __init__(self, project_id, is_submitted):
         self.download_link = ""
         self.project_id = project_id
         self.repertoires_links = []
         self.repertoires_metadata = {}
+        self.is_submitted = is_submitted
 
     def find_link(self):
         base_url = "https://www.ebi.ac.uk/ena/browser/api/xml/"
@@ -26,7 +27,8 @@ class ENA_Downloader():
         if project_links is not None:
             for project_link in project_links.findall('.//PROJECT_LINK'):
                 xref_link = project_link.find('.//XREF_LINK')
-                if xref_link is not None and xref_link.find('DB').text in ['ENA-FASTQ-FILES']:
+                files = 'ENA-SUBMITTED-FILES' if self.is_submitted else 'ENA-FASTQ-FILES'
+                if xref_link is not None and xref_link.find('DB').text in [files]:
                     self.download_link = xref_link.find('ID').text
 
     
@@ -67,7 +69,10 @@ class ENA_Downloader():
 
         for row in reader:
             run_accession = row['run_accession']
-            fastq_files = row['fastq_ftp'].split(';')
+            if not self.is_submitted:
+                fastq_files = row['fastq_ftp'].split(';')
+            else:
+                fastq_files = row['submitted_ftp'].split(';')
             if run_accession in self.repertoires_metadata:
                 file = self.repertoires_metadata[run_accession]
                 download_dir = os.path.join(PROJECTS_PATH, self.project_id, 'raw_seq' ,file[0], file[1], file[2])
