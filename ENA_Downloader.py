@@ -79,7 +79,14 @@ class ENA_Downloader():
                 os.makedirs(download_dir, exist_ok=True)
 
                 for file_url in fastq_files:
-                    file_name = file_url.split('/')[-1]
+                    if not self.is_submitted:
+                        file_name = file_url.split('/')[-1]
+                    else:
+                        if '_R1.fastq.gz' in file_url:
+                            file_name = run_accession + '_1.fastq.gz'
+                        else:
+                            file_name = run_accession + '_2.fastq.gz'
+
                     file_path = os.path.join(download_dir, file_name)
                     if not os.path.exists(file_path):
                         self.download_file("https://" + file_url, file_path)
